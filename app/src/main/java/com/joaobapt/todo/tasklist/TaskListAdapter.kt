@@ -10,13 +10,14 @@ import org.w3c.dom.Text
 
 class TaskListAdapter : RecyclerView.Adapter<TaskListAdapter.TaskViewHolder>()
 {
-    var currentList: List<String> = listOf()
+    var currentList: List<Task> = listOf()
     
     inner class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
     {
-        fun bind(taskTitle: String)
+        fun bind(taskTitle: String, taskDescription: String)
         {
             itemView.findViewById<TextView>(R.id.task_title).text = taskTitle
+            itemView.findViewById<TextView>(R.id.task_description).text = taskDescription
         }
     }
     
@@ -29,7 +30,7 @@ class TaskListAdapter : RecyclerView.Adapter<TaskListAdapter.TaskViewHolder>()
     
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int)
     {
-        holder.bind(currentList[position])
+        currentList[position].apply { holder.bind(title, description) }
     }
     
     override fun getItemCount(): Int = currentList.size
