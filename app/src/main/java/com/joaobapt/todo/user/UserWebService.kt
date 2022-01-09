@@ -8,6 +8,9 @@ interface UserWebService {
     @GET("users/info")
     suspend fun getInfo(): Response<UserInfo>
     
+    @PATCH("users")
+    suspend fun update(@Body user: UserInfo): Response<UserInfo>
+    
     @Multipart
     @PATCH("users/update_avatar")
     suspend fun updateAvatar(@Part avatar: MultipartBody.Part): Response<UserInfo>

@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -26,9 +27,11 @@ import java.util.*
 
 class UserInfoActivity : AppCompatActivity() {
     private lateinit var binding: ActivityUserInfoBinding
+    private lateinit var pictureUri: Uri
     
     private val mediaStore by lazy { MediaStoreRepository(this) }
-    private lateinit var pictureUri: Uri
+    
+    private val viewModel: UserInfoViewModel by viewModels()
     
     private val permissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()) { results ->
@@ -62,12 +65,19 @@ class UserInfoActivity : AppCompatActivity() {
             takePictureButton.setOnClickListener { launchCameraWithPermission() }
             setContentView(root)
         }
+    }
+    
+    override fun onResume() {
+        super.onResume()
+        
+        viewModel.getInfo()
         
         lifecycleScope.launch {
-            val userInfo = Api.userWebService.getInfo().body()
-            binding.avatarImageView.load(userInfo?.avatar) {
-                transformations(CircleCropTransformation())
-                error(R.drawable.ic_launcher_background)
+            viewModel.userInfo.collect {
+                binding.avatarImageView.load(it?.avatar) {
+                    error(R.drawable.ic_launcher_background)
+                    transformations(CircleCropTransformation())
+                }
             }
         }
     }
@@ -109,17 +119,15 @@ class UserInfoActivity : AppCompatActivity() {
     }
     
     private fun handleImage() {
-        lifecycleScope.launch { Api.userWebService.updateAvatar(convert(pictureUri)) }
-        binding.avatarImageView.load(pictureUri) {
-            error(R.drawable.ic_launcher_background)
-            transformations(CircleCropTransformation())
-        }
-    }
+        val stream = contentResolver.openInputStream(pictureUri)
+        
+        if (stream != null) {
+            viewModel.updateAvatar(stream)
     
-    private fun convert(uri: Uri): MultipartBody.Part {
-        return MultipartBody.Part.createFormData(
-            name = "avatar", filename = "temp.jpeg",
-            body = contentResolver.openInputStream(uri)!!.readBytes().toRequestBody()
-        )
+            binding.avatarImageView.load(pictureUri) {
+                error(R.drawable.ic_launcher_background)
+                transformations(CircleCropTransformation())
+            }
+        }
     }
 }
