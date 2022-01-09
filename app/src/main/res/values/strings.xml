@@ -18,4 +18,8 @@
     <string name="user_last_name">Last Name</string>
     <string name="user_email">Email</string>
     <string name="user_confirm">Confirm</string>
+    <string name="auth_log_in">Log in</string>
+    <string name="auth_sign_up">Sign Up</string>
+    <string name="user_password">Password</string>
+    <string name="confirm_password">Confirm Password</string>
 </resources>
