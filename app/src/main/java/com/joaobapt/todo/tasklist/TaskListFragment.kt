@@ -11,11 +11,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import coil.load
+import coil.transform.CircleCropTransformation
 import com.joaobapt.todo.databinding.FragmentTaskListBinding
 import com.joaobapt.todo.form.FormActivity
 import com.joaobapt.todo.network.Api
 import kotlinx.coroutines.launch
-import kotlinx.serialization.ExperimentalSerializationApi as ExperimentalSerializationApi
 
 class TaskListFragment : Fragment() {
     private var _binding: FragmentTaskListBinding? = null
@@ -45,6 +46,9 @@ class TaskListFragment : Fragment() {
         lifecycleScope.launch {
             val userInfo = Api.userWebService.getInfo().body()!!
             binding.userInfoText.text = "${userInfo.firstName} ${userInfo.lastName}"
+        }
+        binding.userAvatar.load("https://goo.gl/gEgYUd") {
+            transformations(CircleCropTransformation())
         }
     }
     
