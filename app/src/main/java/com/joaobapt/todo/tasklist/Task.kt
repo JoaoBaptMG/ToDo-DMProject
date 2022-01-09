@@ -1,10 +1,18 @@
 package com.joaobapt.todo.tasklist
 
 import androidx.recyclerview.widget.DiffUtil
+import kotlinx.serialization.SerialName
 import java.io.Serializable
 
-data class Task(val id: String, val title: String,
-                val description: String = "<no description>") : Serializable
+@kotlinx.serialization.Serializable
+data class Task(
+    @SerialName("id")
+    val id: String,
+    @SerialName("title")
+    val title: String,
+    @SerialName("description")
+    val description: String = "<no description>"
+) : Serializable
 
 object TasksDiffCallback : DiffUtil.ItemCallback<Task>() {
     override fun areItemsTheSame(oldItem: Task, newItem: Task) = oldItem == newItem

@@ -12,10 +12,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.joaobapt.todo.databinding.FragmentTaskListBinding
 import com.joaobapt.todo.form.FormActivity
 import com.joaobapt.todo.network.Api
+import com.joaobapt.todo.network.TasksRepository
+import com.joaobapt.todo.replace
 import kotlinx.coroutines.launch
-
-// Support function
-fun <E> Iterable<E>.replace(old: E, new: E) = map { if (it == old) new else it }
 
 class TaskListFragment : Fragment() {
     private var _binding: FragmentTaskListBinding? = null
@@ -24,30 +23,18 @@ class TaskListFragment : Fragment() {
     // It must be here to be able to be accessed by formLauncher
     private lateinit var taskListAdapter: TaskListAdapter
     
-    private var taskList = listOf<Task>()
+    private val tasksRepository = TasksRepository()
     
     private val formLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()) { result ->
         val task = result.data?.getSerializableExtra("task") as? Task
-        if (task != null) {
-            // Replace the old task if necessary, if not, add it to the end of the list
-            val oldTask = taskList.firstOrNull { it.id == task.id }
-            taskList = if (oldTask != null)
-                taskList.replace(oldTask, task)
-            else taskList + task
-            
-            taskListAdapter.submitList(taskList)
-        }
+        if (task != null)
+            lifecycleScope.launch { tasksRepository.createOrUpdate(task) }
     }
     
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
         super.onCreateView(inflater, container, savedInstanceState)
-        
-        // Create and retain the instance
-        val serializedList = savedInstanceState?.getSerializable("task_list")
-        taskList = (serializedList as? ArrayList<*>)?.filterIsInstance<Task>() ?: listOf()
-        
         _binding = FragmentTaskListBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -60,11 +47,7 @@ class TaskListFragment : Fragment() {
             binding.userInfoText.text = "${userInfo.firstName} ${userInfo.lastName}"
         }
         
-    }
-    
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putSerializable("task_list", ArrayList(taskList))
+        lifecycleScope.launch { tasksRepository.refresh() }
     }
     
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -72,8 +55,7 @@ class TaskListFragment : Fragment() {
         taskListAdapter = TaskListAdapter(object : TaskListListener {
             override fun onClickEdit(task: Task) = startFormActivity(task)
             override fun onClickDelete(task: Task) {
-                taskList = taskList - task
-                taskListAdapter.submitList(taskList)
+                lifecycleScope.launch { tasksRepository.delete(task) }
             }
             override fun onLongClick(task: Task) {
                 val intent = Intent().apply {
@@ -95,7 +77,10 @@ class TaskListFragment : Fragment() {
         // Bind actions
         binding.taskListFab.setOnClickListener { startFormActivity(null) }
         
-        taskListAdapter.submitList(taskList)
+        // Collect all the tasks from the server
+        lifecycleScope.launch {
+            tasksRepository.taskList.collect { taskListAdapter.submitList(it) }
+        }
     }
     
     private fun startFormActivity(task: Task?) {
