@@ -7,7 +7,6 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 
-@ExperimentalSerializationApi
 object Api {
     private const val BASE_URL = "https://android-tasks-api.herokuapp.com/api/"
     // Not recommended, it should be somewhere else where it isn't pushed to Git,
