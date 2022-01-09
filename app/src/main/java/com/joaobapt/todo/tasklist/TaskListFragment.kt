@@ -35,6 +35,11 @@ class TaskListFragment : Fragment() {
                                        title = "Task ${taskList.size + 1}")
             taskListAdapter.submitList(taskList)
         }
+        
+        taskListAdapter.onClickDelete = { task ->
+            taskList = taskList - task
+            taskListAdapter.submitList(taskList)
+        }
     }
     
     override fun onDestroyView() {
