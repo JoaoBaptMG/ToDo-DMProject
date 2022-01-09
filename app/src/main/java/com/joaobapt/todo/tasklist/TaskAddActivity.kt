@@ -1,14 +1,12 @@
-package com.joaobapt.todo.form
+package com.joaobapt.todo.tasklist
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.joaobapt.todo.R
+import androidx.appcompat.app.AppCompatActivity
 import com.joaobapt.todo.databinding.ActivityFormBinding
-import com.joaobapt.todo.tasklist.Task
 import java.util.*
 
-class FormActivity : AppCompatActivity() {
+class TaskAddActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding = ActivityFormBinding.inflate(layoutInflater)
@@ -36,8 +34,8 @@ class FormActivity : AppCompatActivity() {
         
         binding.confirmButton.setOnClickListener {
             val newTask = Task(id = taskId,
-                title = binding.taskEditTitle.text.toString(),
-                description = binding.taskEditDescription.text.toString())
+                               title = binding.taskEditTitle.text.toString(),
+                               description = binding.taskEditDescription.text.toString())
             
             intent?.putExtra("task", newTask)
             setResult(RESULT_OK, intent)

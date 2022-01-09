@@ -1,6 +1,5 @@
-package com.joaobapt.todo.network
+package com.joaobapt.todo.tasklist
 
-import com.joaobapt.todo.tasklist.Task
 import retrofit2.Response
 import retrofit2.http.*
 

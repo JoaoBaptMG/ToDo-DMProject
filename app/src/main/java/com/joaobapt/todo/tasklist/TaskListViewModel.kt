@@ -2,7 +2,6 @@ package com.joaobapt.todo.tasklist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.joaobapt.todo.network.TasksRepository
 import com.joaobapt.todo.replace
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

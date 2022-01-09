@@ -1,17 +1,10 @@
-package com.joaobapt.todo.network
+package com.joaobapt.todo.tasklist
 
 import android.util.Log
-import com.joaobapt.todo.tasklist.Task
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.serialization.ExperimentalSerializationApi
+import com.joaobapt.todo.network.Api
 
 class TasksRepository {
     private val webService = Api.tasksWebService
-    
-    // These two variables hold the same data, one private and one public
-    private val _taskList = MutableStateFlow<List<Task>>(emptyList())
-    val taskList = _taskList.asStateFlow()
     
     suspend fun refresh(): List<Task>? {
         val response = webService.getTasks()

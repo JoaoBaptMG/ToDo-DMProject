@@ -13,8 +13,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
 import coil.transform.CircleCropTransformation
+import com.joaobapt.todo.R
 import com.joaobapt.todo.databinding.FragmentTaskListBinding
-import com.joaobapt.todo.form.FormActivity
 import com.joaobapt.todo.network.Api
 import com.joaobapt.todo.user.UserInfoActivity
 import kotlinx.coroutines.launch
@@ -44,12 +44,20 @@ class TaskListFragment : Fragment() {
         super.onResume()
         
         viewModel.refresh()
+        
         lifecycleScope.launch {
-            val userInfo = Api.userWebService.getInfo().body()!!
-            binding.userInfoText.text = "${userInfo.firstName} ${userInfo.lastName}"
+            val userInfo = Api.userWebService.getInfo().body()
+            
+            if (userInfo != null) {
+                binding.userInfoText.text = "${userInfo.firstName} ${userInfo.lastName}"
+                binding.userAvatar.load(userInfo.avatar) {
+                    error(R.drawable.ic_launcher_background)
+                    transformations(CircleCropTransformation())
+                }
+            }
         }
         
-        with (binding.userAvatar) {
+        with(binding.userAvatar) {
             load("https://goo.gl/gEgYUd") {
                 transformations(CircleCropTransformation())
             }
@@ -81,7 +89,7 @@ class TaskListFragment : Fragment() {
     }
     
     private fun startFormActivity(task: Task?) {
-        val intent = Intent(context, FormActivity::class.java)
+        val intent = Intent(context, TaskAddActivity::class.java)
         if (task != null) intent.putExtra("task", task)
         formLauncher.launch(intent)
     }
