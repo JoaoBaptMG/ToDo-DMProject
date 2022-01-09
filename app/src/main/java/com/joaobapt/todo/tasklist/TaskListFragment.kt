@@ -21,6 +21,8 @@ class TaskListFragment : Fragment() {
     // It must be here to be able to be accessed by formLauncher
     private lateinit var taskListAdapter: TaskListAdapter
     
+    private var taskList = listOf<Task>()
+    
     private val formLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()) { result ->
         val task = result.data?.getSerializableExtra("task") as? Task
@@ -37,8 +39,19 @@ class TaskListFragment : Fragment() {
     
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
+        super.onCreateView(inflater, container, savedInstanceState)
+        
+        // Create and retain the instance
+        val serializedList = savedInstanceState?.getSerializable("task_list")
+        taskList = (serializedList as? ArrayList<*>)?.filterIsInstance<Task>() ?: listOf()
+        
         _binding = FragmentTaskListBinding.inflate(inflater, container, false)
         return binding.root
+    }
+    
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putSerializable("task_list", ArrayList(taskList))
     }
     
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -68,6 +81,8 @@ class TaskListFragment : Fragment() {
         
         // Bind actions
         binding.taskListFab.setOnClickListener { startFormActivity(null) }
+        
+        taskListAdapter.submitList(taskList)
     }
     
     private fun startFormActivity(task: Task?) {
@@ -80,6 +95,4 @@ class TaskListFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-    
-    private var taskList = listOf<Task>()
 }
