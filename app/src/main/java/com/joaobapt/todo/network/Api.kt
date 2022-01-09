@@ -1,5 +1,7 @@
 package com.joaobapt.todo.network
 
+import android.content.Context
+import androidx.preference.PreferenceManager
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.joaobapt.todo.tasklist.TasksWebService
 import com.joaobapt.todo.user.UserWebService
@@ -11,18 +13,22 @@ import retrofit2.Retrofit
 object Api {
     private const val BASE_URL = "https://android-tasks-api.herokuapp.com/api/"
     
-    // Not recommended, it should be somewhere else where it isn't pushed to Git,
-    // but it's a learning project, so whatever (I'm sure I'll receive an email
-    // from a GitHub bot warning a token is leaking)
-    private const val TOKEN =
-        "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo2NzQsImV4cCI6MTY3MzI0NzA5Mn0.igIOfhIbV3G3PMXooDVpNjJkKgfXMa3El1bVfjt1wow"
+    lateinit var appContext: Context
+    
+    fun setupContext(context: Context) {
+        appContext = context
+    }
+    
+    fun getToken() = PreferenceManager.getDefaultSharedPreferences(appContext)
+        .getString("auth_token_key", "")
     
     private val okHttpClient by lazy {
         OkHttpClient.Builder()
             .addInterceptor { chain ->
-                val newRequest = chain.request().newBuilder()
-                    .addHeader("Authorization", "Bearer $TOKEN").build()
-                chain.proceed(newRequest)
+                val requestBuilder = chain.request().newBuilder()
+                val token = getToken()
+                if (token != null) requestBuilder.addHeader("Authorization", "Bearer $token")
+                chain.proceed(requestBuilder.build())
             }.build()
     }
     
