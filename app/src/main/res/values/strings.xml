@@ -2,4 +2,8 @@
     <string name="app_name">ToDo</string>
     <string name="add_task">Add Task</string>
     <string name="remove_task">Remove Task</string>
+    <string name="new_task">New Task</string>
+    <string name="task_title_label">Title</string>
+    <string name="task_title_description">Description</string>
+    <string name="task_form_confirm">Confirm</string>
 </resources>
