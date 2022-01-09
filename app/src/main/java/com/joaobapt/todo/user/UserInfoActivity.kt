@@ -11,14 +11,19 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
+import androidx.lifecycle.lifecycleScope
 import coil.load
 import coil.transform.CircleCropTransformation
 import com.joaobapt.todo.R
 import com.joaobapt.todo.databinding.ActivityUserInfoBinding
+import com.joaobapt.todo.network.Api
+import kotlinx.coroutines.launch
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 
 class UserInfoActivity : AppCompatActivity() {
-    private lateinit var _binding: ActivityUserInfoBinding
+    private lateinit var binding: ActivityUserInfoBinding
     
     private val cameraPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()) { accepted ->
@@ -40,14 +45,18 @@ class UserInfoActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
-        _binding = ActivityUserInfoBinding.inflate(layoutInflater)
-        with(_binding) {
-            avatarImageView.load("https://goo.gl/gEgYUd") {
-                transformations(CircleCropTransformation())
-            }
-            
+        binding = ActivityUserInfoBinding.inflate(layoutInflater)
+        with(binding) {
             takePictureButton.setOnClickListener { launchCameraWithPermission() }
             setContentView(root)
+        }
+        
+        lifecycleScope.launch {
+            val userInfo = Api.userWebService.getInfo().body()
+            binding.avatarImageView.load(userInfo?.avatar) {
+                transformations(CircleCropTransformation())
+                error(R.drawable.ic_launcher_background)
+            }
         }
     }
     
@@ -75,9 +84,22 @@ class UserInfoActivity : AppCompatActivity() {
                              Uri.fromParts("package", packageName, null)))
     }
     
-    private fun launchCamera() { cameraLauncher.launch(null) }
+    private fun launchCamera() {
+        cameraLauncher.launch(null)
+    }
     
     private fun handleImage(imageUri: Uri) {
+        lifecycleScope.launch { Api.userWebService.updateAvatar(convert(imageUri)) }
+        binding.avatarImageView.load(imageUri) {
+            error(R.drawable.ic_launcher_background)
+            transformations(CircleCropTransformation())
+        }
+    }
     
+    private fun convert(uri: Uri): MultipartBody.Part {
+        return MultipartBody.Part.createFormData(
+            name = "avatar", filename = "temp.jpeg",
+            body = contentResolver.openInputStream(uri)!!.readBytes().toRequestBody()
+        )
     }
 }
