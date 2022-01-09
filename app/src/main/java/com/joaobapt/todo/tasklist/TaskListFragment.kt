@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
 import coil.transform.CircleCropTransformation
 import com.joaobapt.todo.R
+import com.joaobapt.todo.auth.AuthenticationActivity
 import com.joaobapt.todo.databinding.FragmentTaskListBinding
 import com.joaobapt.todo.network.Api
 import com.joaobapt.todo.user.UserInfoActivity
@@ -35,7 +36,7 @@ class TaskListFragment : Fragment() {
     private val userInfoLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()) { result ->
         val logout = result.data?.getBooleanExtra("logout", false) ?: false
-        if (logout) activity?.finish()
+        if (logout) startAuthActivity()
     }
     
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -45,31 +46,7 @@ class TaskListFragment : Fragment() {
         return binding.root
     }
     
-    @SuppressLint("SetTextI18n")
-    override fun onResume() {
-        super.onResume()
-        
-        viewModel.refresh()
-        
-        lifecycleScope.launch {
-            val userInfo = Api.userWebService.getInfo().body()
-            
-            if (userInfo != null) {
-                binding.userInfoText.text = "${userInfo.firstName} ${userInfo.lastName}"
-                binding.userAvatar.load(userInfo.avatar) {
-                    error(R.drawable.ic_launcher_background)
-                    transformations(CircleCropTransformation())
-                }
-            }
-        }
-        
-        binding.userAvatar.setOnClickListener {
-            userInfoLauncher.launch(Intent(context, UserInfoActivity::class.java))
-        }
-    }
-    
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        // Create the list adapter with our own list listener
         val taskListAdapter = TaskListAdapter(object : TaskListListener {
             override fun onClickEdit(task: Task) = startFormActivity(task)
             override fun onClickDelete(task: Task) = viewModel.delete(task)
@@ -82,12 +59,38 @@ class TaskListFragment : Fragment() {
             adapter = taskListAdapter
         }
         
-        // Bind actions
         binding.taskListFab.setOnClickListener { startFormActivity(null) }
         
-        // Collect all the tasks from the server
         lifecycleScope.launch {
             viewModel.taskList.collect { taskListAdapter.submitList(it) }
+        }
+    }
+    
+    @SuppressLint("SetTextI18n")
+    override fun onResume() {
+        super.onResume()
+        
+        lifecycleScope.launch {
+            val response = Api.userWebService.refreshToken()
+            
+            if (!response.isSuccessful) startAuthActivity()
+            else {
+                val userInfo = Api.userWebService.getInfo().body()
+    
+                if (userInfo != null) {
+                    binding.userInfoText.text = "${userInfo.firstName} ${userInfo.lastName}"
+                    binding.userAvatar.load(userInfo.avatar) {
+                        error(R.drawable.ic_launcher_background)
+                        transformations(CircleCropTransformation())
+                    }
+                }
+    
+                viewModel.refresh()
+            }
+        }
+        
+        binding.userAvatar.setOnClickListener {
+            userInfoLauncher.launch(Intent(context, UserInfoActivity::class.java))
         }
     }
     
@@ -105,6 +108,10 @@ class TaskListFragment : Fragment() {
         }
         
         startActivity(Intent.createChooser(intent, null))
+    }
+    
+    private fun startAuthActivity() {
+        startActivity(Intent(context, AuthenticationActivity::class.java))
     }
     
     override fun onDestroyView() {

@@ -39,7 +39,7 @@ class SignupFragment : Fragment() {
                         val body = response.body()
                         if (response.isSuccessful && body != null && body.token != null) {
                             Api.setToken(body.token)
-                            startActivity(Intent(context, MainActivity::class.java))
+                            activity?.finish()
                         }
                         else {
                             val errorMsg = getString(R.string.connection_error)

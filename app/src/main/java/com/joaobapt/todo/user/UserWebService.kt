@@ -14,6 +14,9 @@ interface UserWebService {
     @POST("users/login")
     suspend fun login(@Body user: LoginForm): Response<AuthResponse>
     
+    @GET("users/refresh_token")
+    suspend fun refreshToken(): Response<AuthResponse>
+    
     @GET("users/info")
     suspend fun getInfo(): Response<UserInfo>
     

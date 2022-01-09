@@ -22,7 +22,7 @@ object Api {
     
     private val prefManager get() = PreferenceManager.getDefaultSharedPreferences(appContext)
     
-    fun getToken() = prefManager.getString("auth_token_key", "")
+    private fun getToken() = prefManager.getString("auth_token_key", "")
     
     fun setToken(token: String) {
         prefManager.edit { putString("auth_token_key", token)  }

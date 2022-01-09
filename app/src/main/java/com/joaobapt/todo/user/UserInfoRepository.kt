@@ -9,6 +9,8 @@ import java.io.InputStream
 class UserInfoRepository {
     private val webService = Api.userWebService
     
+    
+    
     suspend fun getInfo(): UserInfo? {
         val response = webService.getInfo()
         return if (response.isSuccessful) response.body() else null
