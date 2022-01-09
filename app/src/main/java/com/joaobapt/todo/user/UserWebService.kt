@@ -1,4 +1,4 @@
-package com.joaobapt.todo.network
+package com.joaobapt.todo.user
 
 import retrofit2.Response
 import retrofit2.http.GET

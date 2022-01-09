@@ -1,4 +1,4 @@
-package com.joaobapt.todo.network
+package com.joaobapt.todo.user
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
