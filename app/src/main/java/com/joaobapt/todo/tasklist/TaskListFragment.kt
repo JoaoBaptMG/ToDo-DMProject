@@ -42,7 +42,14 @@ class TaskListFragment : Fragment() {
     }
     
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        taskListAdapter = TaskListAdapter()
+        // Create the list adapter with our own list listener
+        taskListAdapter = TaskListAdapter(object : TaskListListener {
+            override fun onClickEdit(task: Task) = startFormActivity(task)
+            override fun onClickDelete(task: Task) {
+                taskList = taskList - task
+                taskListAdapter.submitList(taskList)
+            }
+        })
         
         // Initialize the RecyclerView
         with(binding.taskListRecyclerView) {
@@ -52,14 +59,6 @@ class TaskListFragment : Fragment() {
         
         // Bind actions
         binding.taskListFab.setOnClickListener { startFormActivity(null) }
-        
-        with (taskListAdapter) {
-            onClickEdit = { startFormActivity(it) }
-            onClickDelete = { task ->
-                taskList = taskList - task
-                submitList(taskList)
-            }
-        }
     }
     
     private fun startFormActivity(task: Task?) {
