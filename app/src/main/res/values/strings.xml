@@ -10,4 +10,7 @@
     <string name="user_avatar">Avatar</string>
     <string name="user_avatar_select_image">Choose Image</string>
     <string name="user_avatar_take_picture">Take a Picture</string>
+    <string name="camera_permission_reason">The camera will be used to take a picture for your avatar.</string>
+    <string name="accept">Accept</string>
+    <string name="decline">Decline</string>
 </resources>
