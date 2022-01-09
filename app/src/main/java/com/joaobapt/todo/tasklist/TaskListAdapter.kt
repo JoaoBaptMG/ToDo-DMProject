@@ -28,6 +28,7 @@ class TaskListAdapter(val listener: TaskListListener)
                 taskDescription.text = task.description
                 taskEditButton.setOnClickListener { listener.onClickEdit(task) }
                 taskRemoveButton.setOnClickListener { listener.onClickDelete(task) }
+                root.setOnLongClickListener { listener.onLongClick(task); true }
             }
         }
     }

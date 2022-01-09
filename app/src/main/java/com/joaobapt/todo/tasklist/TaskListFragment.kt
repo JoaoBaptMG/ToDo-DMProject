@@ -49,6 +49,15 @@ class TaskListFragment : Fragment() {
                 taskList = taskList - task
                 taskListAdapter.submitList(taskList)
             }
+            override fun onLongClick(task: Task) {
+                val intent = Intent().apply {
+                    action = Intent.ACTION_SEND
+                    type = "text/plain"
+                    putExtra(Intent.EXTRA_TEXT, "${task.title}\n${task.description}")
+                }
+                
+                startActivity(Intent.createChooser(intent, null))
+            }
         })
         
         // Initialize the RecyclerView
