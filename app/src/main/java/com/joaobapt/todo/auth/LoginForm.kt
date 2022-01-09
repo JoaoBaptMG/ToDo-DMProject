@@ -10,10 +10,3 @@ data class LoginForm(
     @SerialName("password")
     val password: String
 )
-
-@Serializable
-data class LoginResponse(
-    @SerialName("token")
-    val token: String?
-)
-

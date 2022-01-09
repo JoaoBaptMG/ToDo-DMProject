@@ -1,6 +1,7 @@
 package com.joaobapt.todo.network
 
 import android.content.Context
+import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.joaobapt.todo.tasklist.TasksWebService
@@ -21,6 +22,12 @@ object Api {
     
     fun getToken() = PreferenceManager.getDefaultSharedPreferences(appContext)
         .getString("auth_token_key", "")
+    
+    fun setToken(token: String) {
+        PreferenceManager.getDefaultSharedPreferences(appContext).edit {
+            putString("auth_token_key", token)
+        }
+    }
     
     private val okHttpClient by lazy {
         OkHttpClient.Builder()

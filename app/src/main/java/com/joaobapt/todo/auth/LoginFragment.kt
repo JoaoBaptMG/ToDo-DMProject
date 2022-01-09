@@ -6,10 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.content.edit
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.preference.PreferenceManager
 import com.joaobapt.todo.MainActivity
 import com.joaobapt.todo.R
 import com.joaobapt.todo.databinding.FragmentLoginBinding
@@ -30,14 +28,8 @@ class LoginFragment : Fragment() {
                     lifecycleScope.launch {
                         val response = Api.userWebService.login(LoginForm(email, password))
                         val body = response.body()
-                        
-                        if (response.isSuccessful && body != null) {
-                            val token = body.token
-                            
-                            PreferenceManager.getDefaultSharedPreferences(context).edit {
-                                putString("auth_token_key", token)
-                            }
-                            
+                        if (response.isSuccessful && body != null && body.token != null) {
+                            Api.setToken(body.token)
                             startActivity(Intent(context, MainActivity::class.java))
                         }
                         else {
