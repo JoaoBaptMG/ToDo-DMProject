@@ -14,4 +14,8 @@
     <string name="accept">Accept</string>
     <string name="decline">Decline</string>
     <string name="user_avatar_take_picture_failed">Failed to take picture!</string>
+    <string name="user_first_name">First Name</string>
+    <string name="user_last_name">Last Name</string>
+    <string name="user_email">Email</string>
+    <string name="user_confirm">Confirm</string>
 </resources>

@@ -63,6 +63,8 @@ class UserInfoActivity : AppCompatActivity() {
         with(binding) {
             uploadImageButton.setOnClickListener { galleryLauncher.launch("image/*") }
             takePictureButton.setOnClickListener { launchCameraWithPermission() }
+            userConfirmButton.setOnClickListener { updateUser() }
+            
             setContentView(root)
         }
     }
@@ -78,7 +80,27 @@ class UserInfoActivity : AppCompatActivity() {
                     error(R.drawable.ic_launcher_background)
                     transformations(CircleCropTransformation())
                 }
+    
+                if (it != null) {
+                    with(binding) {
+                        userFirstNameEdit.setText(it.firstName)
+                        userLastNameEdit.setText(it.lastName)
+                        userEmailEdit.setText(it.email)
+                    }
+                }
             }
+        }
+    }
+    
+    private fun updateUser() {
+        with(binding) {
+            val newUser = UserInfo(
+                firstName = userFirstNameEdit.text.toString(),
+                lastName = userLastNameEdit.text.toString(),
+                email = userEmailEdit.text.toString()
+            )
+            
+            viewModel.update(newUser)
         }
     }
     
