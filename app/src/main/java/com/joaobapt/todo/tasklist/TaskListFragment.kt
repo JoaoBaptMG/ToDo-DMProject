@@ -7,9 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.joaobapt.todo.databinding.FragmentTaskListBinding
 import com.joaobapt.todo.form.FormActivity
+import com.joaobapt.todo.network.Api
+import kotlinx.coroutines.launch
 
 // Support function
 fun <E> Iterable<E>.replace(old: E, new: E) = map { if (it == old) new else it }
@@ -47,6 +50,16 @@ class TaskListFragment : Fragment() {
         
         _binding = FragmentTaskListBinding.inflate(inflater, container, false)
         return binding.root
+    }
+    
+    override fun onResume() {
+        super.onResume()
+        
+        lifecycleScope.launch {
+            val userInfo = Api.userWebService.getInfo().body()!!
+            binding.userInfoText.text = "${userInfo.firstName} ${userInfo.lastName}"
+        }
+        
     }
     
     override fun onSaveInstanceState(outState: Bundle) {
