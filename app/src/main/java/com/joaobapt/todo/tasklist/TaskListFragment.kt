@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.joaobapt.todo.R
 import java.util.*
 
@@ -23,8 +24,15 @@ class TaskListFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(context)
         
         val adapter = TaskListAdapter()
-        adapter.currentList = taskList
         recyclerView.adapter = adapter
+        adapter.submitList(taskList)
+        
+        val fab = view.findViewById<FloatingActionButton>(R.id.task_list_fab)
+        fab.setOnClickListener {
+            taskList = taskList + Task(id = UUID.randomUUID().toString(),
+                                       title = "Task ${taskList.size + 1}")
+            adapter.submitList(taskList)
+        }
     }
     
     private var taskList = listOf(

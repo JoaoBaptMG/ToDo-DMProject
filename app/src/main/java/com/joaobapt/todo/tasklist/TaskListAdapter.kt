@@ -4,12 +4,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.joaobapt.todo.R
 
-class TaskListAdapter : RecyclerView.Adapter<TaskListAdapter.TaskViewHolder>() {
-    var currentList: List<Task> = listOf()
-    
+class TaskListAdapter : ListAdapter<Task, TaskListAdapter.TaskViewHolder>(TasksDiffCallback) {
     inner class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(taskTitle: String, taskDescription: String) {
             itemView.findViewById<TextView>(R.id.task_title).text = taskTitle
@@ -24,8 +23,7 @@ class TaskListAdapter : RecyclerView.Adapter<TaskListAdapter.TaskViewHolder>() {
     }
     
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
-        currentList[position].apply { holder.bind(title, description) }
+        val task = getItem(position)
+        holder.bind(task.title, task.description)
     }
-    
-    override fun getItemCount(): Int = currentList.size
 }
