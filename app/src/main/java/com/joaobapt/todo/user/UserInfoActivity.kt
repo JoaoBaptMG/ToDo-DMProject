@@ -65,6 +65,13 @@ class UserInfoActivity : AppCompatActivity() {
             takePictureButton.setOnClickListener { launchCameraWithPermission() }
             userConfirmButton.setOnClickListener { updateUser() }
             
+            userLogoutButton.setOnClickListener {
+                Api.eraseToken()
+                intent?.putExtra("logout", true)
+                setResult(RESULT_OK, intent)
+                finish()
+            }
+            
             setContentView(root)
         }
     }

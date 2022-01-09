@@ -20,13 +20,16 @@ object Api {
         appContext = context
     }
     
-    fun getToken() = PreferenceManager.getDefaultSharedPreferences(appContext)
-        .getString("auth_token_key", "")
+    private val prefManager get() = PreferenceManager.getDefaultSharedPreferences(appContext)
+    
+    fun getToken() = prefManager.getString("auth_token_key", "")
     
     fun setToken(token: String) {
-        PreferenceManager.getDefaultSharedPreferences(appContext).edit {
-            putString("auth_token_key", token)
-        }
+        prefManager.edit { putString("auth_token_key", token)  }
+    }
+    
+    fun eraseToken() {
+        prefManager.edit { remove("auth_token_key") }
     }
     
     private val okHttpClient by lazy {

@@ -32,6 +32,12 @@ class TaskListFragment : Fragment() {
         if (task != null) viewModel.addOrEdit(task)
     }
     
+    private val userInfoLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()) { result ->
+        val logout = result.data?.getBooleanExtra("logout", false) ?: false
+        if (logout) activity?.finish()
+    }
+    
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
         super.onCreateView(inflater, container, savedInstanceState)
@@ -57,11 +63,8 @@ class TaskListFragment : Fragment() {
             }
         }
         
-        with(binding.userAvatar) {
-            load("https://goo.gl/gEgYUd") {
-                transformations(CircleCropTransformation())
-            }
-            setOnClickListener { startActivity(Intent(context, UserInfoActivity::class.java)) }
+        binding.userAvatar.setOnClickListener {
+            userInfoLauncher.launch(Intent(context, UserInfoActivity::class.java))
         }
     }
     
