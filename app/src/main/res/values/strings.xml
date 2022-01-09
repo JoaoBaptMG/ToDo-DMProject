@@ -8,4 +8,6 @@
     <string name="task_form_confirm">Confirm</string>
     <string name="edit_task">Edit Task</string>
     <string name="user_avatar">Avatar</string>
+    <string name="user_avatar_select_image">Choose Image</string>
+    <string name="user_avatar_take_picture">Take a Picture</string>
 </resources>

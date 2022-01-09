@@ -16,6 +16,7 @@ import coil.transform.CircleCropTransformation
 import com.joaobapt.todo.databinding.FragmentTaskListBinding
 import com.joaobapt.todo.form.FormActivity
 import com.joaobapt.todo.network.Api
+import com.joaobapt.todo.user.UserInfoActivity
 import kotlinx.coroutines.launch
 
 class TaskListFragment : Fragment() {
@@ -47,8 +48,12 @@ class TaskListFragment : Fragment() {
             val userInfo = Api.userWebService.getInfo().body()!!
             binding.userInfoText.text = "${userInfo.firstName} ${userInfo.lastName}"
         }
-        binding.userAvatar.load("https://goo.gl/gEgYUd") {
-            transformations(CircleCropTransformation())
+        
+        with (binding.userAvatar) {
+            load("https://goo.gl/gEgYUd") {
+                transformations(CircleCropTransformation())
+            }
+            setOnClickListener { startActivity(Intent(context, UserInfoActivity::class.java)) }
         }
     }
     
