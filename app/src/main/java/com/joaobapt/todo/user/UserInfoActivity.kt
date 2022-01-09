@@ -45,11 +45,20 @@ class UserInfoActivity : AppCompatActivity() {
                            Snackbar.LENGTH_LONG).show()
     }
     
+    private val galleryLauncher = registerForActivityResult(
+        ActivityResultContracts.GetContent()) { uri ->
+        if (uri != null) {
+            pictureUri = uri
+            handleImage()
+        }
+    }
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
         binding = ActivityUserInfoBinding.inflate(layoutInflater)
         with(binding) {
+            uploadImageButton.setOnClickListener { galleryLauncher.launch("image/*") }
             takePictureButton.setOnClickListener { launchCameraWithPermission() }
             setContentView(root)
         }
