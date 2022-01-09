@@ -13,8 +13,17 @@ class FormActivity : AppCompatActivity() {
         val binding = ActivityFormBinding.inflate(layoutInflater)
         setContentView(binding.root)
         
+        // Get the task ID (or null)
+        val oldTask = intent.getSerializableExtra("task") as? Task
+        if (oldTask != null) {
+            binding.taskEditTitle.setText(oldTask.title)
+            binding.taskEditDescription.setText(oldTask.description)
+        }
+        
+        val taskId = oldTask?.id ?: UUID.randomUUID().toString()
+        
         binding.confirmButton.setOnClickListener {
-            val newTask = Task(id = UUID.randomUUID().toString(),
+            val newTask = Task(id = taskId,
                 title = binding.taskEditTitle.text.toString(),
                 description = binding.taskEditDescription.text.toString())
             

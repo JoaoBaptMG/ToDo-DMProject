@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.joaobapt.todo.databinding.ItemTaskBinding
 
 class TaskListAdapter : ListAdapter<Task, TaskListAdapter.TaskViewHolder>(TasksDiffCallback) {
+    var onClickEdit: (Task) -> Unit = {}
     var onClickDelete: (Task) -> Unit = {}
     
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
@@ -26,6 +27,7 @@ class TaskListAdapter : ListAdapter<Task, TaskListAdapter.TaskViewHolder>(TasksD
             with(binding) {
                 taskTitle.text = task.title
                 taskDescription.text = task.description
+                taskEditButton.setOnClickListener { onClickEdit(task) }
                 taskRemoveButton.setOnClickListener { onClickDelete(task) }
             }
         }
