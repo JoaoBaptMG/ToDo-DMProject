@@ -1,11 +1,10 @@
 package com.joaobapt.todo.auth
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.fragment.NavHostFragment
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.joaobapt.todo.R
 import com.joaobapt.todo.databinding.FragmentAuthenticationBinding

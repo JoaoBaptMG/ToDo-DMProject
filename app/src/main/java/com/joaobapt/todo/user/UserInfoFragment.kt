@@ -24,7 +24,6 @@ import com.google.modernstorage.mediastore.SharedPrimary
 import com.joaobapt.todo.R
 import com.joaobapt.todo.databinding.FragmentUserInfoBinding
 import com.joaobapt.todo.network.Api
-import com.joaobapt.todo.setNavigationResult
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -89,7 +88,7 @@ class UserInfoFragment : Fragment() {
                     error(R.drawable.ic_launcher_background)
                     transformations(CircleCropTransformation())
                 }
-    
+                
                 if (it != null) {
                     with(binding) {
                         userFirstNameEdit.setText(it.firstName)
@@ -156,7 +155,7 @@ class UserInfoFragment : Fragment() {
         
         if (stream != null) {
             viewModel.updateAvatar(stream)
-    
+            
             binding.avatarImageView.load(pictureUri) {
                 error(R.drawable.ic_launcher_background)
                 transformations(CircleCropTransformation())

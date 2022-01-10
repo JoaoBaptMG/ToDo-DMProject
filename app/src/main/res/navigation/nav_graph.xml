@@ -9,7 +9,7 @@
         android:id="@+id/authenticationFragment"
         android:name="com.joaobapt.todo.auth.AuthenticationFragment"
         android:label="fragment_authentication"
-        tools:layout="@layout/fragment_authentication" >
+        tools:layout="@layout/fragment_authentication">
         <action
             android:id="@+id/action_authenticationFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
@@ -21,7 +21,7 @@
         android:id="@+id/signupFragment"
         android:name="com.joaobapt.todo.auth.SignupFragment"
         android:label="fragment_signup"
-        tools:layout="@layout/fragment_signup" >
+        tools:layout="@layout/fragment_signup">
         <action
             android:id="@+id/action_signupFragment_to_taskListFragment"
             app:destination="@id/taskListFragment" />
@@ -30,7 +30,7 @@
         android:id="@+id/loginFragment"
         android:name="com.joaobapt.todo.auth.LoginFragment"
         android:label="fragment_login"
-        tools:layout="@layout/fragment_login" >
+        tools:layout="@layout/fragment_login">
         <action
             android:id="@+id/action_loginFragment_to_taskListFragment"
             app:destination="@id/taskListFragment" />
@@ -39,7 +39,7 @@
         android:id="@+id/taskListFragment"
         android:name="com.joaobapt.todo.tasklist.TaskListFragment"
         android:label="fragment_task_list"
-        tools:layout="@layout/fragment_task_list" >
+        tools:layout="@layout/fragment_task_list">
         <action
             android:id="@+id/action_taskListFragment_to_userInfoFragment"
             app:destination="@id/userInfoFragment" />
@@ -54,7 +54,7 @@
         android:id="@+id/userInfoFragment"
         android:name="com.joaobapt.todo.user.UserInfoFragment"
         android:label="fragment_user_info"
-        tools:layout="@layout/fragment_user_info" >
+        tools:layout="@layout/fragment_user_info">
         <action
             android:id="@+id/action_userInfoFragment_to_authenticationFragment"
             app:destination="@id/authenticationFragment" />

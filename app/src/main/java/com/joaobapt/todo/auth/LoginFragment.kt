@@ -32,8 +32,7 @@ class LoginFragment : Fragment() {
                             findNavController().navigate(
                                 R.id.action_loginFragment_to_taskListFragment
                             )
-                        }
-                        else {
+                        } else {
                             val errorMsg = getString(R.string.connection_error)
                             Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show()
                         }

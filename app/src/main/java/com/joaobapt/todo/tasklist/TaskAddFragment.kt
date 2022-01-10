@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.joaobapt.todo.databinding.FragmentAddTaskBinding
 import com.joaobapt.todo.getNavigationParam
-import com.joaobapt.todo.getNavigationResult
 import com.joaobapt.todo.removeNavigationResult
 import com.joaobapt.todo.setNavigationResult
 
@@ -17,9 +16,7 @@ class TaskAddFragment : Fragment() {
                               savedInstanceState: Bundle?): View {
         super.onCreateView(inflater, container, savedInstanceState)
         val binding = FragmentAddTaskBinding.inflate(inflater, container, false)
-        
-        var taskId: String? = null
-        
+
         val oldTask = getNavigationParam<Task>("paramTask")
         if (oldTask != null) {
             binding.taskEditTitle.setText(oldTask.title)
@@ -27,7 +24,7 @@ class TaskAddFragment : Fragment() {
             removeNavigationResult<Task>("paramTask")
         }
         
-        taskId = oldTask?.id ?: ""
+        val taskId = oldTask?.id ?: ""
         
         binding.confirmButton.setOnClickListener {
             val newTask = Task(id = taskId,

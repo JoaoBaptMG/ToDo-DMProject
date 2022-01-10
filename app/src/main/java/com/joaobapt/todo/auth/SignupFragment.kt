@@ -41,8 +41,7 @@ class SignupFragment : Fragment() {
                             findNavController().navigate(
                                 R.id.action_signupFragment_to_taskListFragment
                             )
-                        }
-                        else {
+                        } else {
                             val errorMsg = getString(R.string.connection_error)
                             Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show()
                         }

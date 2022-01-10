@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,7 +16,6 @@ import coil.transform.CircleCropTransformation
 import com.joaobapt.todo.R
 import com.joaobapt.todo.databinding.FragmentTaskListBinding
 import com.joaobapt.todo.getNavigationResult
-import com.joaobapt.todo.getNavigationResultLiveData
 import com.joaobapt.todo.network.Api
 import com.joaobapt.todo.setNavigationParam
 import kotlinx.coroutines.launch
