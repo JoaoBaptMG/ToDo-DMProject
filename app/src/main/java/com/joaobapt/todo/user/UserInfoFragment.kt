@@ -6,11 +6,15 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import coil.load
 import coil.transform.CircleCropTransformation
 import com.google.android.material.snackbar.Snackbar
@@ -18,19 +22,17 @@ import com.google.modernstorage.mediastore.FileType
 import com.google.modernstorage.mediastore.MediaStoreRepository
 import com.google.modernstorage.mediastore.SharedPrimary
 import com.joaobapt.todo.R
-import com.joaobapt.todo.databinding.ActivityUserInfoBinding
+import com.joaobapt.todo.databinding.FragmentUserInfoBinding
 import com.joaobapt.todo.network.Api
+import com.joaobapt.todo.setNavigationResult
 import kotlinx.coroutines.launch
-import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.toRequestBody
 import java.util.*
 
-class UserInfoActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityUserInfoBinding
+class UserInfoFragment : Fragment() {
+    private lateinit var binding: FragmentUserInfoBinding
     private lateinit var pictureUri: Uri
     
-    private val mediaStore by lazy { MediaStoreRepository(this) }
-    
+    private val mediaStore by lazy { MediaStoreRepository(context!!) }
     private val viewModel: UserInfoViewModel by viewModels()
     
     private val permissionLauncher = registerForActivityResult(
@@ -56,10 +58,11 @@ class UserInfoActivity : AppCompatActivity() {
         }
     }
     
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View {
+        super.onCreateView(inflater, container, savedInstanceState)
         
-        binding = ActivityUserInfoBinding.inflate(layoutInflater)
+        binding = FragmentUserInfoBinding.inflate(inflater, container, false)
         with(binding) {
             uploadImageButton.setOnClickListener { galleryLauncher.launch("image/*") }
             takePictureButton.setOnClickListener { launchCameraWithPermission() }
@@ -67,13 +70,12 @@ class UserInfoActivity : AppCompatActivity() {
             
             userLogoutButton.setOnClickListener {
                 Api.eraseToken()
-                intent?.putExtra("logout", true)
-                setResult(RESULT_OK, intent)
-                finish()
+                findNavController().clearBackStack(
+                    R.id.action_userInfoFragment_to_authenticationFragment)
             }
-            
-            setContentView(root)
         }
+        
+        return binding.root
     }
     
     override fun onResume() {
@@ -115,7 +117,7 @@ class UserInfoActivity : AppCompatActivity() {
         val camPermission = Manifest.permission.CAMERA
         val storagePermission = Manifest.permission.WRITE_EXTERNAL_STORAGE
         
-        val permissionStatus = checkSelfPermission(camPermission)
+        val permissionStatus = context?.checkSelfPermission(camPermission) ?: false
         val isAlreadyAccepted = permissionStatus == PackageManager.PERMISSION_GRANTED
         val isExplanationNeeded = shouldShowRequestPermissionRationale(camPermission)
         
@@ -125,7 +127,7 @@ class UserInfoActivity : AppCompatActivity() {
     }
     
     private fun showExplanation() {
-        AlertDialog.Builder(this)
+        AlertDialog.Builder(context ?: return)
             .setMessage(getString(R.string.camera_permission_reason))
             .setPositiveButton(getString(R.string.accept)) { _, _ -> launchAppSettings() }
             .setNegativeButton(getString(R.string.decline)) { dialog, _ -> dialog.dismiss() }
@@ -133,8 +135,9 @@ class UserInfoActivity : AppCompatActivity() {
     }
     
     private fun launchAppSettings() {
+        val myActivity = activity ?: return
         startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                             Uri.fromParts("package", packageName, null)))
+                             Uri.fromParts("package", myActivity.packageName, null)))
     }
     
     private fun launchCamera() {
@@ -148,7 +151,8 @@ class UserInfoActivity : AppCompatActivity() {
     }
     
     private fun handleImage() {
-        val stream = contentResolver.openInputStream(pictureUri)
+        val myActivity = activity ?: return
+        val stream = myActivity.contentResolver.openInputStream(pictureUri)
         
         if (stream != null) {
             viewModel.updateAvatar(stream)

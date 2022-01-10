@@ -6,18 +6,20 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
 import coil.transform.CircleCropTransformation
 import com.joaobapt.todo.R
-import com.joaobapt.todo.auth.AuthenticationActivity
 import com.joaobapt.todo.databinding.FragmentTaskListBinding
+import com.joaobapt.todo.getNavigationResult
+import com.joaobapt.todo.getNavigationResultLiveData
 import com.joaobapt.todo.network.Api
-import com.joaobapt.todo.user.UserInfoActivity
+import com.joaobapt.todo.setNavigationParam
 import kotlinx.coroutines.launch
 
 class TaskListFragment : Fragment() {
@@ -26,18 +28,6 @@ class TaskListFragment : Fragment() {
     
     // It must be here to be able to be accessed by formLauncher
     private val viewModel: TaskListViewModel by viewModels()
-    
-    private val formLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()) { result ->
-        val task = result.data?.getSerializableExtra("task") as? Task
-        if (task != null) viewModel.addOrEdit(task)
-    }
-    
-    private val userInfoLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()) { result ->
-        val logout = result.data?.getBooleanExtra("logout", false) ?: false
-        if (logout) startAuthActivity()
-    }
     
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
@@ -73,10 +63,10 @@ class TaskListFragment : Fragment() {
         lifecycleScope.launch {
             val response = Api.userWebService.refreshToken()
             
-            if (!response.isSuccessful) startAuthActivity()
+            if (!response.isSuccessful) navigateToAuthFragment()
             else {
                 val userInfo = Api.userWebService.getInfo().body()
-    
+                
                 if (userInfo != null) {
                     binding.userInfoText.text = "${userInfo.firstName} ${userInfo.lastName}"
                     binding.userAvatar.load(userInfo.avatar) {
@@ -84,20 +74,28 @@ class TaskListFragment : Fragment() {
                         transformations(CircleCropTransformation())
                     }
                 }
-    
+                
                 viewModel.refresh()
             }
         }
         
-        binding.userAvatar.setOnClickListener {
-            userInfoLauncher.launch(Intent(context, UserInfoActivity::class.java))
-        }
+        binding.userAvatar.setOnClickListener { navigateToUserInfoFragment() }
+        
+        val newTask = getNavigationResult<Task>("newTask")
+        if (newTask != null) viewModel.addOrEdit(newTask)
     }
     
     private fun startFormActivity(task: Task?) {
-        val intent = Intent(context, TaskAddActivity::class.java)
-        if (task != null) intent.putExtra("task", task)
-        formLauncher.launch(intent)
+        if (task != null) setNavigationParam(task, "paramTask")
+        findNavController().navigate(R.id.action_taskListFragment_to_taskAddFragment)
+    }
+    
+    private fun navigateToAuthFragment() {
+        findNavController().clearBackStack(R.id.action_taskListFragment_to_authenticationFragment)
+    }
+    
+    private fun navigateToUserInfoFragment() {
+        findNavController().navigate(R.id.action_taskListFragment_to_userInfoFragment)
     }
     
     private fun startShareActivity(task: Task) {
@@ -108,10 +106,6 @@ class TaskListFragment : Fragment() {
         }
         
         startActivity(Intent.createChooser(intent, null))
-    }
-    
-    private fun startAuthActivity() {
-        startActivity(Intent(context, AuthenticationActivity::class.java))
     }
     
     override fun onDestroyView() {

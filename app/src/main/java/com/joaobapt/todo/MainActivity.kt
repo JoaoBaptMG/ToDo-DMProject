@@ -1,8 +1,7 @@
 package com.joaobapt.todo
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.joaobapt.todo.databinding.ActivityFormBinding
+import androidx.appcompat.app.AppCompatActivity
 import com.joaobapt.todo.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
